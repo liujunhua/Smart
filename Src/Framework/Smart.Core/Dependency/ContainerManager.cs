@@ -4,7 +4,7 @@ using Smart.Core.Extensions;
 using Smart.Core.Infrastructure;
 using System.Linq;
 
-namespace Smart.Core.DependencyManagement
+namespace Smart.Core.Dependency
 {
     /// <summary>
     /// 默认IOC容器（控制对象的生命周期和对象间的关系）（基于Autofac实现）
@@ -13,7 +13,7 @@ namespace Smart.Core.DependencyManagement
     {
         #region 私有字段
 
-        private Autofac.IContainer _container;
+        internal Autofac.IContainer _container;
 
         #endregion
 
@@ -51,6 +51,7 @@ namespace Smart.Core.DependencyManagement
             builder.RegisterInstance(config.TypeFinder).As<ITypeFinder>().SingleInstance();
             builder.RegisterInstance(config).As<SmartConfig>().SingleInstance();
             builder.RegisterInstance(this).As<IContainerManager>().SingleInstance();
+            builder.RegisterType<Caching.HttpCache>().Named<Caching.ICache>("smart.lang").SingleInstance();
             builder.Update(this._container);
 
             #endregion
@@ -61,7 +62,7 @@ namespace Smart.Core.DependencyManagement
             var dependencies = config.TypeFinder.ForTypesDerivedFrom<IDependency>().ToList();
             foreach (var dependency in dependencies)
             {
-                var reg = builder.RegisterType(dependency) 
+                var reg = builder.RegisterType(dependency)
                     .AsImplementedInterfaces() // 注册所有接口
                     .PropertiesAutowired(); // 自动属性注入
                 if (typeof(ISingletonDependency).IsAssignableFrom(dependency))
@@ -118,11 +119,6 @@ namespace Smart.Core.DependencyManagement
             {
                 config = new SmartConfig();
             }
-            if (config.TypeFinder == null)
-            {
-                config.TypeFinder = new DirectoryTypeFinder();
-            }
-
             // 注册依赖
             RegisterDependencies(config);
 

@@ -1,7 +1,6 @@
 ﻿using Smart.Core.Configuration;
-using Smart.Core.DependencyManagement;
+using Smart.Core.Dependency;
 using Smart.Core.Infrastructure;
-using Smart.Core.Localization;
 using System.Runtime.CompilerServices;
 
 namespace Smart.Core
@@ -13,7 +12,28 @@ namespace Smart.Core
     {
         #region 属性
 
-        public Localizer T { get; set; }
+        /// <summary>
+        /// 获取配置信息
+        /// </summary>
+        public static SmartConfig Config
+        {
+            get { return Current.Resolve<SmartConfig>(); }
+        }
+
+        /// <summary>
+        /// 获取当前容器实例
+        /// </summary>
+        public static IContainerManager Current
+        {
+            get
+            {
+                if (Singleton<IContainerManager>.Instance == null)
+                {
+                    Initialize(null, false);
+                }
+                return Singleton<IContainerManager>.Instance;
+            }
+        }
 
         #endregion
 
@@ -41,21 +61,6 @@ namespace Smart.Core
         public static void Replace(IContainerManager containerManager)
         {
             Singleton<IContainerManager>.Instance = containerManager;
-        }
-
-        /// <summary>
-        /// 获取当前容器实例
-        /// </summary>
-        public static IContainerManager Current
-        {
-            get
-            {
-                if (Singleton<IContainerManager>.Instance == null)
-                {
-                    Initialize(null, false);
-                }
-                return Singleton<IContainerManager>.Instance;
-            }
         }
 
     }

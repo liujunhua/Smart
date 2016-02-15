@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Smart.Core.Localization
+namespace Smart.Samples.Services
 {
-    public class Localizer
+    internal class ServiceBase
     {
     }
 }
